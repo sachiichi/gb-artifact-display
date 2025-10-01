@@ -2,7 +2,7 @@
 
 import ArtifactInputDialog from "@/components/ArtifactInputDialog";
 import ArtifactTable from "@/components/ArtifactTable";
-import { GBFArtifact } from "@/types/artifact";
+import GBFArtifactApiResponse, { GBFArtifact } from "@/types/artifact";
 import { Button, Stack, TextField, Typography } from "@mui/material";
 import React from "react";
 
@@ -17,7 +17,7 @@ export default function Home() {
 
   const handleClose = (value?: string) => {
     if (value) {
-      const apiData = JSON.parse(value);
+      const apiData = JSON.parse(value) as GBFArtifactApiResponse[];
       const artifactList: GBFArtifact[] = apiData.flatMap(e => e.list);
       setArtifactJson(artifactList);
     }

@@ -245,15 +245,8 @@ export default function AtrifactTable(props: ArtifactTableProps) {
                 id: 'level',
                 header: 'アーティファクトレベル',
                 muiTableHeadCellProps: { style: { color: 'green' } }, //custom props
-                enableHiding: false, //disable a feature for this column
+                enableHiding: true, //disable a feature for this column
             },
-            /**          "skill_id": 30015,
-          "skill_quality": 5,
-          "level": 2,
-          "name": "クリティカル確率",
-          "is_max_quality": true,
-          "effect_value": "+21%",
-          "icon_image": "bonus_28" */
             {
                 accessorFn: (r) => (`${r.skill1_info.name}`),
                 // accessorKey: 'attribute', //simple recommended way to define a column
@@ -424,13 +417,37 @@ export default function AtrifactTable(props: ArtifactTableProps) {
         [],
     );
 
+// .element-dark td {
+//     background-color: rgba(156,113,217,.3137254902)
+// }
 
+// .element-earth td {
+//     background-color: rgba(166,107,55,.3137254902)
+// }
+
+// .element-fire td {
+//     background-color: rgba(255,67,67,.3137254902)
+// }
+
+// .element-light td {
+//     background-color: rgba(255,255,71,.3137254902)
+// }
+
+// .element-water td {
+//     background-color: rgba(46,130,255,.3137254902)
+// }
+
+// .element-wind td {
+//     background-color: rgba(138,255,113,.3137254902)
+// }
     const table = useMaterialReactTable<GBFArtifact>({
         columns,
         data, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
         enableColumnOrdering: true, //enable a feature for all columns
         enableGlobalFilter: false, //turn off a feature
-    });
+        muiTableBodyRowProps: ({row}) => ({sx: {backGroundColor: 'rgba(64,224,208,0.31)'}})
+    })
+    ;
     return (
         <div>
             <MaterialReactTable table={table} />

@@ -1,30 +1,83 @@
 'use client'
 
 import GBFArtifactApiResponse, { GBFArtifact } from "@/types/artifact";
-import { Dialog, DialogTitle, List, ListItem, ListItemButton, ListItemAvatar, Avatar, ListItemText, Typography, Button, TextField, DialogActions, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, DialogContent,  } from "@mui/material";
+import { Dialog, DialogTitle, List, ListItem, ListItemButton, ListItemAvatar, Avatar, ListItemText, Typography, Button, TextField, DialogActions, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, DialogContent, Container, Box, } from "@mui/material";
 import IconButton from '@mui/material/IconButton';
-import React, { ChangeEvent, useMemo } from "react";
+import React, { ChangeEvent, useCallback, useMemo } from "react";
 import CloseIcon from '@mui/icons-material/Close';
+import { useDropzone } from 'react-dropzone';
+import { BorderAll } from "@mui/icons-material";
 
 
 
 
 
 export interface ArtifactInputDialogProps {
-    open: boolean;
-    onClose: (value?: string) => void;
+    // open: boolean;
+    // onClose: (value?: string) => void;
     // onChange: (value: string) => void;
+    setArtifactJson: (json: GBFArtifact[]) => void;
 }
 
+function extractAndConvertGbArtifactResponse(harJson: Object): GBFArtifact[] | null {
+    // if (!harJson.hasOwnProperty('log')) {
+    //     throw new Error('read frror');
+    // }
+    // if (!harJson.log.hasOwnProperty('entries')) {
+    //     throw new Error('read frror');
+    // }
+    let result: GBFArtifact[] | null = [];
+    try {
+        //@ts-ignore あとで型つける
+        const entries = harJson.log.entries as Array<Object>;
+        // @ts-ignore あとで型つける
+        const responseTextList = entries.filter(e => {
+            // @ts-ignore あとで型つける
+            const url = e.request.url as string;
+            return url.startsWith('https://game.granbluefantasy.jp/rest/artifact/list/');
+        //@ts-ignore あとで型つける
+        }).map(e => e.response.content.text);
+        const responseBodyJsonList = responseTextList.map(e => JSON.parse(e)) as GBFArtifactApiResponse[];
+        console.log(responseBodyJsonList);
+        const artifactList: GBFArtifact[] = responseBodyJsonList.flatMap(e => e.list);
+        result = artifactList;
+    }
+    catch (e) {
+        console.error(e);
+    }
+    finally {
+        return result;
+    }
+}
 
 export default function ArtifactInputDialog(props: ArtifactInputDialogProps) {
 
     const [inputJson, setInputJson] = React.useState("");
-    const { onClose, open } = props;
+    const { setArtifactJson } = props;
 
-    // const handleClose = () => {
-    //     onClose('a');
-    // };
+    const onDrop = useCallback((acceptedFiles: Blob[]) => {
+        acceptedFiles.forEach((file) => {
+            const reader = new FileReader()
+
+            reader.onabort = () => console.log('file reading was aborted')
+            reader.onerror = () => console.log('file reading has failed')
+            reader.onload = () => {
+                // Do whatever you want with the file contents
+                const binaryStr = reader.result?.toString();
+                if (!binaryStr) {
+                    throw new Error('read frror');
+                }
+                const harJson = JSON.parse(binaryStr.toString()) as Object;
+                const response = extractAndConvertGbArtifactResponse(harJson);
+                if(response) {
+                    setArtifactJson(response);
+                }
+                console.log(harJson)
+            }
+            reader.readAsText(file)
+        })
+    }, [])
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -32,71 +85,24 @@ export default function ArtifactInputDialog(props: ArtifactInputDialogProps) {
         setInputJson(value);
     }
 
-    const handleOk = () => {
-        onClose(inputJson);
-    }
-    const handleCancel = () => {
-        onClose();
-    }
+    // const handleOk = () => {
+    //     onClose(inputJson);
+    // }
+    // const handleCancel = () => {
+    //     onClose();
+    // }
 
     return (
-        <Dialog onClose={handleCancel} open={open} fullWidth={true}>
-            <DialogTitle>アーティファクト入力</DialogTitle>
-            
-            <DialogContent >
-                <TextField fullWidth
-                    id="outlined-multiline-static"
-                    label="Artifact JSON"
-                    multiline
-                    rows={8}
-                    placeholder="アーティファクトのjsonを入力"
-                    onChange={handleInputChange}
-                />
-            </DialogContent>
-        <DialogActions >
-                <Button variant="contained" onClick={handleOk}>OK</Button>
-            </DialogActions>
-        </Dialog>
+        <Box sx={{ bgcolor: '#cfe8fc', height: '100vh' }} {...getRootProps()}>
+            <input {...getInputProps()} />
+            {
+                isDragActive ?
+                    <p>ここにファイルをドロップ</p> :
+                    <p>ドラッグ&ドロップするか、クリックしてファイルを選択する</p>
+            }
+
+        </Box>
+
 
     );
 }
-
-// function SimpleDialogDemo() {
-//     const [open, setOpen] = React.useState(false);
-
-//     const [artifactJson, setArtifactJson] = React.useState<GBFArtifact[]>([]);
-//     const handleClickOpen = () => {
-//         setOpen(true);
-//     };
-
-
-//     const handleClose = (value: string) => {
-//         console.log('handleClose', value);
-
-//         setOpen(false);
-
-//     };
-//     const handleValueChange = (value: string) => {
-//         const apiData = JSON.parse(value);
-//         const artifactList: GBFArtifact[] = apiData.flatMap(e => e.list);
-//         setArtifactJson(artifactList);
-//         const memoResult = useMemo(() => artifactJson, [])
-//         console.log(artifactList);
-//     }
-    
-//     return (
-//         <div>
-
-//             <br />
-//             <Button variant="outlined" onClick={handleClickOpen}>
-//                 Open simple dialog
-//             </Button>
-//             <ArtifactInputDialog
-//                 open={open}
-//                 onClose={handleClose}
-//                 handleValueChange={handleValueChange}
-//             />
-
-//         </div>
-//     );
-// }

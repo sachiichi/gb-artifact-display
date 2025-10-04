@@ -6,7 +6,7 @@ import GBFArtifactApiResponse, { GBFArtifact } from "@/types/artifact";
 import { AppBar, Box, Button, IconButton, Stack, TextField, Toolbar, Typography } from "@mui/material";
 import React from "react";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-
+import GitHubIcon from '@mui/icons-material/GitHub';
 
 export default function Home() {
   const [artifactJson, setArtifactJson] = React.useState<GBFArtifact[]>([]);
@@ -28,15 +28,7 @@ export default function Home() {
     <Box>
       <AppBar position="static">
         <Toolbar>
-          {/* <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton> */}
+
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             アーティファクト眺めるやつ
           </Typography>
@@ -47,8 +39,18 @@ export default function Home() {
             color="inherit"
             aria-label="menu"
             sx={{ mr: 2 }}
+            href="https://github.com/sachiichi/gb-artifact-display"
           >
-            <HelpOutlineIcon/>
+            <GitHubIcon />
+          </IconButton>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+          >
+            <HelpOutlineIcon />
           </IconButton>
         </Toolbar>
       </AppBar>

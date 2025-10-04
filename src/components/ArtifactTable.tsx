@@ -1,8 +1,8 @@
 'use client'
 
 import GBFArtifactApiResponse, { GBFArtifact } from "@/types/artifact";
-import { Dialog, DialogTitle, List, ListItem, ListItemButton, ListItemAvatar, Avatar, ListItemText, Typography, Button, TextField, DialogActions, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Box, Badge, Chip } from "@mui/material";
-import { blue } from "@mui/material/colors";
+import { Dialog, DialogTitle, List, ListItem, ListItemButton, ListItemAvatar, Avatar, ListItemText, Typography, Button, TextField, DialogActions, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Box, Badge, Chip, createTheme, alpha } from "@mui/material";
+import { amber, blue } from "@mui/material/colors";
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import React, { useMemo } from "react";
 import {
@@ -33,6 +33,20 @@ function convertAttribute(apiVal: string): string {
         default: attributeString = "不明";
     }
     return attributeString
+}
+
+function returntAttributeColor(apiVal: string): string {
+    let colorString;
+    switch (apiVal) {
+        case "1": colorString = "#FFD6D6"; break;
+        case "2": colorString = "#D6E9FF"; break;
+        case "3": colorString = "#E6CCB2"; break;
+        case "4": colorString = "#D6FFD6"; break;
+        case "5": colorString = "#FFF5CC"; break;
+        case "6": colorString = '#EAD6FF'; break;
+        default: colorString = "不明";
+    }
+    return colorString
 }
 
 // 武器種の値を文字列へ
@@ -129,91 +143,11 @@ const SKILL_GROUP3: string[] = [
     'アビリティ使用不可/奥義が発動可能な時、奥義を温存していても発動'
 ];
 
-// const columns: GridColDef[] = [
-//     { field: 'name', headerName: '名前', width: 70 },
-//     { field: 'attribute', headerName: '属性', width: 130, valueGetter: (v, r) => (convertAttribute(v)) },
-//     { field: 'kind', headerName: '武器の種類', width: 130, valueGetter: (v, r) => (convertKind(v)) },
-//     { field: 'skill1_info', headerName: 'スキル1', width: 90, valueGetter: (v, r) => { return `${r.skill1_info.name}` } },
-//     { field: 'skill2_info', headerName: 'スキル2', width: 90, valueGetter: (v, r) => { return `${r.skill2_info.name}` } },
-//     { field: 'skill3_info', headerName: 'スキル3', width: 90, valueGetter: (v, r) => { return `${r.skill3_info.name}` } },
-//     { field: 'skill4_info', headerName: 'スキル4', width: 90, valueGetter: (v, r) => { return `${r.skill4_info.name}` } },
-
-//     //   {
-//     //     field: 'fullName',
-//     //     headerName: 'Full name',
-//     //     description: 'This column has a value getter and is not sortable.',
-//     //     sortable: false,
-//     //     width: 160,
-//     //     valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-//     //   },
-// ];
-
-// const paginationModel = { page: 0, pageSize: 5 };
-
-// export default function ArtifactInputDialog(props: SimpleDialogProps) {
-
-// const data: GBFArtifact[] = [
-
-//     {
-//         "artifact_id": 301080101,
-//         "max_level": 5,
-//         "name": "オミナス・フィアン",
-//         "comment": "",
-//         "rarity": "3",
-//         "skill1_info": {
-//             "skill_id": 10014,
-//             "skill_quality": 4,
-//             "level": 1,
-//             "name": "攻撃力",
-//             "is_max_quality": false,
-//             "effect_value": "+1680",
-//             "icon_image": "bonus_28"
-//         },
-//         "skill2_info": {
-//             "skill_id": 30071,
-//             "skill_quality": 1,
-//             "level": 1,
-//             "name": "防御",
-//             "is_max_quality": false,
-//             "effect_value": "+8.8%",
-//             "icon_image": "bonus_28"
-//         },
-//         "skill3_info": {
-//             "skill_id": 30273,
-//             "skill_quality": 3,
-//             "level": 1,
-//             "name": "最大HP上昇/防御力-70%",
-//             "is_max_quality": false,
-//             "effect_value": "+10.4%",
-//             "icon_image": "bonus_29"
-//         },
-//         "skill4_info": {
-//             "skill_id": 50081,
-//             "skill_quality": 1,
-//             "level": 1,
-//             "name": "1回攻撃発動時、自分に一定個数ランダムな強化効果",
-//             "is_max_quality": true,
-//             "effect_value": "1個",
-//             "icon_image": "bonus_30"
-//         },
-//         "id": 11990,
-//         "level": "1",
-//         "kind": "8",
-//         "attribute": "6",
-//         "next_exp": 30000,
-//         "remain_next_exp": 30000,
-//         "exp_width": 0,
-//         "is_locked": false,
-//         "is_unnecessary": false,
-//         "equip_npc_info": {image: 'aaa', name: 'bbb', user_npc_id: 11111}
-//     },
-
-// ];
 
 
 export default function AtrifactTable(props: ArtifactTableProps) {
     const data = props.artifactData;
-    
+
     const columnHelper = createMRTColumnHelper<GBFArtifact>();
     const columns = useMemo<MRT_ColumnDef<GBFArtifact>[]>(
         () => [
@@ -417,37 +351,25 @@ export default function AtrifactTable(props: ArtifactTableProps) {
         [],
     );
 
-// .element-dark td {
-//     background-color: rgba(156,113,217,.3137254902)
-// }
-
-// .element-earth td {
-//     background-color: rgba(166,107,55,.3137254902)
-// }
-
-// .element-fire td {
-//     background-color: rgba(255,67,67,.3137254902)
-// }
-
-// .element-light td {
-//     background-color: rgba(255,255,71,.3137254902)
-// }
-
-// .element-water td {
-//     background-color: rgba(46,130,255,.3137254902)
-// }
-
-// .element-wind td {
-//     background-color: rgba(138,255,113,.3137254902)
-// }
     const table = useMaterialReactTable<GBFArtifact>({
         columns,
         data, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
         enableColumnOrdering: true, //enable a feature for all columns
+        initialState: {
+            density: 'compact',
+            pagination:{
+                pageIndex: 0,
+                pageSize: 25
+            }
+        },
         enableGlobalFilter: false, //turn off a feature
-        muiTableBodyRowProps: ({row}) => ({sx: {backGroundColor: 'rgba(64,224,208,0.31)'}})
+        muiTableBodyRowProps: ({ isDetailPanel, row }) => ({
+            sx: {
+                backgroundColor: alpha(returntAttributeColor(row.original.attribute),1)
+            },
+        })
     })
-    ;
+        ;
     return (
         <div>
             <MaterialReactTable table={table} />

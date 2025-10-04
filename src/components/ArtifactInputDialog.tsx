@@ -35,10 +35,9 @@ function extractAndConvertGbArtifactResponse(harJson: Object): GBFArtifact[] | n
             // @ts-ignore あとで型つける
             const url = e.request.url as string;
             return url.startsWith('https://game.granbluefantasy.jp/rest/artifact/list/');
-        //@ts-ignore あとで型つける
+            //@ts-ignore あとで型つける
         }).map(e => e.response.content.text);
         const responseBodyJsonList = responseTextList.map(e => JSON.parse(e)) as GBFArtifactApiResponse[];
-        console.log(responseBodyJsonList);
         const artifactList: GBFArtifact[] = responseBodyJsonList.flatMap(e => e.list);
         result = artifactList;
     }
@@ -49,6 +48,7 @@ function extractAndConvertGbArtifactResponse(harJson: Object): GBFArtifact[] | n
         return result;
     }
 }
+
 
 export default function ArtifactInputDialog(props: ArtifactInputDialogProps) {
 
@@ -69,10 +69,9 @@ export default function ArtifactInputDialog(props: ArtifactInputDialogProps) {
                 }
                 const harJson = JSON.parse(binaryStr.toString()) as Object;
                 const response = extractAndConvertGbArtifactResponse(harJson);
-                if(response) {
+                if (response) {
                     setArtifactJson(response);
                 }
-                console.log(harJson)
             }
             reader.readAsText(file)
         })
@@ -93,12 +92,21 @@ export default function ArtifactInputDialog(props: ArtifactInputDialogProps) {
     // }
 
     return (
-        <Box sx={{ bgcolor: '#cfe8fc', height: '100vh' }} {...getRootProps()}>
+        <Box sx={{ bgcolor: '#cfe8fc', height: '50vh' }} {...getRootProps()}>
             <input {...getInputProps()} />
             {
                 isDragActive ?
                     <p>ここにファイルをドロップ</p> :
-                    <p>ドラッグ&ドロップするか、クリックしてファイルを選択する</p>
+                    // <p>ドラッグ&ドロップするか、クリックしてファイルを選択する</p>
+                    <Box >
+                        <ol>
+                            <li>アーティファクトの2ページ目を開く</li>
+                            <li>ChromeのDevToolを開き、ネットワークタブを開く</li>
+                            <li>1ページから順にすべてクリック</li>
+                            <li>HARファイルをダウンロード</li>
+                            <li>ここにドロップ</li>
+                        </ol>
+                    </Box>
             }
 
         </Box>
